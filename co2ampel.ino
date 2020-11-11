@@ -19,21 +19,24 @@
 
 #include <Wire.h>
 
-#include <Adafruit_Sensor.h>
-#include "Adafruit_BME680.h"
+//#include <Adafruit_Sensor.h>
+//#include "Adafruit_BME680.h"
 
 #include <Adafruit_NeoPixel.h>
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
 
-#define PIN 15
+#define LED_PIN 15
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-Adafruit_BME680 bme; // I2C
+#define HIGH_CO2_BOUNDARY 2000
+#define LOW_CO2_BOUNDARY 1000
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, PIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_BME680 bme; // I2C
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 float hum_weighting = 0.25; // so hum effect is 25% of the total air quality score
 float gas_weighting = 0.75; // so gas effect is 75% of the total air quality score
@@ -49,6 +52,7 @@ void setup()
   Serial.begin(115200);
  
   Wire.begin();
+  delay(1000); // give sensors some time to power-up
 
   if (airSensor.begin() == false)
   {
@@ -159,11 +163,11 @@ if (! bme.performReading()) {
     //if (qs>150 && qs<200) { c=strip.Color(255,165,0); } // yellow
     //if (qs<150) { c=strip.Color(0,128,0); } // green
     
-    if (ppm>2000) { c=strip.Color(255,0,0); }
-    if (ppm>1000 && ppm<2000) { c=strip.Color(255,165,0); }
-    if (ppm<1000) { c=strip.Color(0,128,0); }    
+    if (ppm>HIGH_CO2_BOUNDARY) { c=strip.Color(255,0,0); }
+    if (ppm>LOW_CO2_BOUNDARY && ppm <= HIGH_CO2_BOUNDARY) { c=strip.Color(255,165,0); }
+    if (ppm<=LOW_CO2_BOUNDARY) { c=strip.Color(0,128,0); }    
 
-    int ct=map(ppm, 0, 2000, 1, 12);
+    int ct=map(ppm, 350, HIGH_CO2_BOUNDARY, 1, 12);
     //int ct=map(qs, 0, 300, 12, 1);
   
     for(uint16_t i=0; i<strip.numPixels(); i++) {
@@ -178,7 +182,7 @@ if (! bme.performReading()) {
     delay(2000);
 }
 
- void GetGasReference(){
+ /*void GetGasReference(){
   // Now run the sensor for a burn-in period, then use combination of relative humidity and gas resistance to estimate indoor air quality as a percentage.
   Serial.println("Getting a new gas reference value");
   int readings = 10;
@@ -186,7 +190,7 @@ if (! bme.performReading()) {
     gas_reference += bme.readGas();
   }
   gas_reference = gas_reference / readings;
-}
+}*/
 
 String CalculateIAQ(float score){
   String IAQ_text = "Air quality is ";
