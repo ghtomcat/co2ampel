@@ -57,12 +57,12 @@ void setup()
     Serial.println("Could not find a valid BME680 sensor, check wiring!");
     while (1);
   }
-
-   // Initialize the GadgetBle Library
+*/
+  // Initialize the GadgetBle Library
   gadgetBle.begin();
   Serial.print("Sensirion GadgetBle Lib initialized with deviceId = ");
   Serial.println(gadgetBle.getDeviceIdString());
-
+/*
   // Set up oversampling and filter initialization
   bme.setTemperatureOversampling(BME680_OS_8X);
   bme.setHumidityOversampling(BME680_OS_2X);
@@ -71,7 +71,7 @@ void setup()
   bme.setGasHeater(320, 150); // 320*C for 150 ms
 */
   strip.begin();
-  strip.setBrightness(64);
+  strip.setBrightness(64); // set brightness
   strip.show(); // Initialize all pixels to 'off'
 }
 
