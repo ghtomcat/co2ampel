@@ -1,21 +1,7 @@
 /*
-  Reading CO2, humidity and temperature from the SCD30
-  By: Nathan Seidle
-  SparkFun Electronics
-  Date: May 22nd, 2018
-  License: MIT. See license file for more information but you can
-  basically do whatever you want with this code.
-
-  Feel like supporting open source hardware?
-  Buy a board from SparkFun! https://www.sparkfun.com/products/15112
-
-  This example prints the current CO2 level, relative humidity, and temperature in C.
-
-  Hardware Connections:
-  Attach RedBoard to computer using a USB cable.
-  Connect SCD30 to RedBoard using Qwiic cable.
-  Open Serial Monitor at 115200 baud.
+read ppm from scd30 and display on neopixel strip (stick/ring)
 */
+#include <Sensirion_GadgetBle_Lib.h>
 
 #include <Wire.h>
 
@@ -27,7 +13,8 @@
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
 
-#define LED_PIN 15
+#define LED_PIN 15 // strip is connected to pin
+#define LED_COUNT 12 // number of pixels
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
@@ -36,7 +23,12 @@ SCD30 airSensor;
 
 //Adafruit_BME680 bme; // I2C
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(12, LED_PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+static int64_t lastMmntTime = 0;
+static int startCheckingAfterUs = 1900000;
+
+GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_CO2_ALT);
 
 float hum_weighting = 0.25; // so hum effect is 25% of the total air quality score
 float gas_weighting = 0.75; // so gas effect is 75% of the total air quality score
@@ -66,6 +58,11 @@ void setup()
     while (1);
   }
 
+   // Initialize the GadgetBle Library
+  gadgetBle.begin();
+  Serial.print("Sensirion GadgetBle Lib initialized with deviceId = ");
+  Serial.println(gadgetBle.getDeviceIdString());
+
   // Set up oversampling and filter initialization
   bme.setTemperatureOversampling(BME680_OS_8X);
   bme.setHumidityOversampling(BME680_OS_2X);
@@ -93,9 +90,21 @@ void loop()
     Serial.print(airSensor.getHumidity(), 1);
 
     ppm=airSensor.getCO2();
+    hum=airSensor.getHumidity();
+    temp=airSensor.getTemperature();
+
+    Serial.println();
+
+    gadgetBle.writeCO2(ppm);
+    gadgetBle.writeTemperature(temp);
+    gadgetBle.writeHumidity(hum);
+
+    gadgetBle.commit();
 
     Serial.println();
   }
+  
+  gadgetBle.handleEvents();
 /*
 if (! bme.performReading()) {
     Serial.println("Failed to perform reading :(");
