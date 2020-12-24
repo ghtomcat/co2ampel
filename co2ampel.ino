@@ -9,6 +9,7 @@ read ppm from scd30 and display on neopixel strip (stick/ring)
 //#include "Adafruit_BME680.h"
 
 #include <Adafruit_NeoPixel.h>
+#include <ArduinoJson.h>
 
 #include "SparkFun_SCD30_Arduino_Library.h" //Click here to get the library: http://librarymanager/All#SparkFun_SCD30
 SCD30 airSensor;
@@ -80,6 +81,7 @@ void loop()
   
   if (airSensor.dataAvailable())
   {
+    	/*
     Serial.print("co2(ppm):");
     Serial.print(airSensor.getCO2());
 
@@ -88,12 +90,12 @@ void loop()
 
     Serial.print(" humidity(%):");
     Serial.print(airSensor.getHumidity(), 1);
-
+	*/
     ppm=airSensor.getCO2();
     hum=airSensor.getHumidity();
     temp=airSensor.getTemperature();
 
-    Serial.println();
+    //Serial.println();
 
     gadgetBle.writeCO2(ppm);
     gadgetBle.writeTemperature(temp);
@@ -101,7 +103,16 @@ void loop()
 
     gadgetBle.commit();
 
-    Serial.println();
+    StaticJsonBuffer<200> jsonBuffer;
+
+    JsonObject& root = jsonBuffer.createObject();
+    root["sensor"] = "S00001";
+    root["co2"] = airSensor.getCO2();
+    root["temp"] = airSensor.getTemperature();
+    root["humidity"] = airSensor.getHumidity();
+
+    root.printTo(Serial);
+    Serial.println("\n");
   }
   
   gadgetBle.handleEvents();
