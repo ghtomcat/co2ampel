@@ -39,6 +39,8 @@ float gas_reference = 250000;
 float hum_reference = 40;
 int getgasreference_count = 0;
 int ppm;
+int hum;
+int temp;
 
 void setup()
 {
