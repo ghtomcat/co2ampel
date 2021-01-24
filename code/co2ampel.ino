@@ -42,6 +42,19 @@ int ppm;
 int hum;
 int temp;
 
+struct Button {
+  const uint8_t PIN;
+  uint32_t numberKeyPresses;
+  bool pressed;
+};
+
+Button button1 = {0, 0, false};
+
+void IRAM_ATTR isr() {
+  button1.numberKeyPresses += 1;
+  button1.pressed = true;
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -49,6 +62,8 @@ void setup()
   Wire.begin();
   delay(1000); // give sensors some time to power-up
 
+  attachInterrupt(button1.PIN, isr, FALLING);	
+	
   if (airSensor.begin() == false)
   {
     Serial.println("Air sensor not detected. Please check wiring. Freezing...");
@@ -118,6 +133,32 @@ void loop()
   }
   
   gadgetBle.handleEvents();
+	
+	
+  if (button1.pressed) {
+    Serial.printf("Button 1 has been pressed %u times\n", button1.numberKeyPresses);
+    button1.pressed = false;
+
+    // calibration
+    airSensor.setAltitudeCompensation(0); // Altitude in m ü NN
+    airSensor.setForcedRecalibrationFactor(400); // fresh air
+    Serial.print("SCD30 calibration, please wait 30 s ...");
+      
+    strip.clear();
+    for ( int i = 0; i < LED_COUNT; i++) { // blue for calibration
+      strip.setPixelColor(i, 0, 0, 255);
+    }
+    strip.show();
+      
+    delay(30000);
+      
+    Serial.println("Calibration done");
+    Serial.println("Rebooting device");
+    ESP.restart();
+      
+    delay(5000);
+  }
+
 /*
 if (! bme.performReading()) {
     Serial.println("Failed to perform reading :(");
