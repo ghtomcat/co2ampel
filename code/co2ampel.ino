@@ -29,7 +29,7 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KH
 static int64_t lastMmntTime = 0;
 static int startCheckingAfterUs = 1900000;
 
-GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_CO2_ALT);
+GadgetBle gadgetBle = GadgetBle(GadgetBle::DataType::T_RH_CO2);
 
 float hum_weighting = 0.25; // so hum effect is 25% of the total air quality score
 float gas_weighting = 0.75; // so gas effect is 75% of the total air quality score
