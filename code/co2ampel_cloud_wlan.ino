@@ -75,6 +75,9 @@ Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_COUNT, LED_PIN, NEO_GRB + NEO_KH
 static int64_t lastMmntTime = 0;
 static int startCheckingAfterUs = 1900000;
 
+unsigned long lastTime = 0;
+unsigned long timerDelay = 60000;
+
 float hum_weighting = 0.25; // so hum effect is 25% of the total air quality score
 float gas_weighting = 0.75; // so gas effect is 75% of the total air quality score
 
@@ -129,7 +132,7 @@ void setup()
   attachInterrupt(button1.PIN, isr, FALLING);  
 
   WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP("<ssid>", "<passwort>");
+  WiFiMulti.addAP("<ssid>", "<password>");
 
   // wait for WiFi connection
   Serial.print("Waiting for WiFi to connect...");
@@ -208,6 +211,8 @@ void loop()
     delay(5000);
   }
 
+  // send data every timerDelay ms
+  if ((millis() - lastTime) > timerDelay) {
   WiFiClientSecure *client = new WiFiClientSecure;
   if(client) {
     client -> setCACert(rootCACertificate);
@@ -256,7 +261,8 @@ void loop()
   } else {
     Serial.println("Unable to create client");
   }
-
+  lastTime = millis();
+  } 
 /*
 if (! bme.performReading()) {
     Serial.println("Failed to perform reading :(");
