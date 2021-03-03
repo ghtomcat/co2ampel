@@ -234,11 +234,25 @@ void loop()
       if (str2.length()==1) { str2="0" + str2;};
       str2.toUpperCase();
 
+      // convert humidity for payload
+      hum=airSensor.getHumidity()*100;
+      String str3 = String(hum, HEX);
+      if (str3.length()==3) { str3="0" + str3;};
+      str3.toUpperCase();      
+
+       // convert temperature for payload
+      temp=airSensor.getTemperature()*100;
+      String str4 = String(temp, HEX);
+      if (str4.length()==3) { str4="0" + str4;};
+      str4.toUpperCase();   
+      
       // submit payload via POST, as json
       https.addHeader("Content-Type", "application/json");
       String payload="{\"packet\":{\"payload_encoding\":\"binary\",\"payload\":\"";
       payload +=str1;
       payload +=str2;
+      payload +=str3;
+      payload +=str4;
       payload +="\"}}";
 
       //Serial.println(payload);
