@@ -31,7 +31,7 @@ void os_getDevEui (u1_t* buf) { memcpy_P(buf, DEVEUI, 8);}
 static const u1_t PROGMEM APPKEY[16] = {};
 void os_getDevKey (u1_t* buf) {  memcpy_P(buf, APPKEY, 16);}
 
-byte payload[2];
+byte payload[6];
 static osjob_t sendjob;
 
 // Schedule TX every this many seconds (might become longer due to duty
@@ -211,6 +211,12 @@ void do_send(osjob_t* j){
         payload[0]=highByte(ppm);
         payload[1]=lowByte(ppm);
         
+        payload[2]=highByte(hum);
+        payload[3]=lowByte(hum);
+
+        payload[4]=highByte(temp);
+        payload[5]=lowByte(temp);
+        
         LMIC_setTxData2(1, payload, sizeof(payload), 0);
         Serial.println(F("Packet queued"));
     }
@@ -293,8 +299,8 @@ void loop()
     Serial.print(airSensor.getHumidity(), 1);
   */
     ppm=airSensor.getCO2();
-    hum=airSensor.getHumidity();
-    temp=airSensor.getTemperature();
+    hum=airSensor.getHumidity()*100;
+    temp=airSensor.getTemperature()*100;
   } 
   
   if (button1.pressed) {
