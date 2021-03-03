@@ -65,8 +65,8 @@ WiFiMulti WiFiMulti;
 
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-#define HIGH_CO2_BOUNDARY 2000
-#define LOW_CO2_BOUNDARY 1000
+#define HIGH_CO2_BOUNDARY 1200
+#define LOW_CO2_BOUNDARY 800
 
 //Adafruit_BME680 bme; // I2C
 
