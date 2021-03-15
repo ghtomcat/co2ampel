@@ -71,7 +71,7 @@ void setup()
   attachInterrupt(button1.PIN, isr, FALLING);  
 
   isAQSensorAvailable = false;
-  address=0x76; // bme680-sensor
+  address=0x77; // CJMCU BME80, for Pimoroni BME680 use 0x76
   Wire.beginTransmission(address);
   error = Wire.endTransmission();
   if (error==0) isAQSensorAvailable=true;
