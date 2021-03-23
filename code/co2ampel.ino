@@ -1,5 +1,6 @@
 /*
 read ppm from scd30 and display on neopixel strip (stick/ring)
+version: standalone (data via bluetooth and serial)
 */
 #include <Sensirion_GadgetBle_Lib.h>
 
