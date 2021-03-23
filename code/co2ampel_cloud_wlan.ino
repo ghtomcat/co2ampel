@@ -1,5 +1,6 @@
 /*
 read ppm from scd30 and display on neopixel strip (stick/ring)
+version: switzer.cloud via wlan
 */
 
 #include <Wire.h>
