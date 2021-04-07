@@ -163,6 +163,9 @@ void setup()
   bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
   bme.setGasHeater(320, 150); // 320*C for 150 ms
 */
+  // set temperature offset for co2-sensor
+  airSensor.setTemperatureOffset(4);	
+  
   strip.begin();
   strip.setBrightness(64); // set brightness
   strip.show(); // Initialize all pixels to 'off'
