@@ -111,6 +111,9 @@ void setup()
   
   server.begin();
   
+  // set temperature offset for co2-sensor
+  airSensor.setTemperatureOffset(4);	
+  
   strip.begin();
   strip.setBrightness(64); // set brightness
   strip.show(); // Initialize all pixels to 'off'
