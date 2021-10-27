@@ -125,15 +125,15 @@ void loop()
 
     gadgetBle.commit();
 
-    StaticJsonBuffer<200> jsonBuffer;
+    StaticJsonDocument<200> jsonDoc;
 
-    JsonObject& root = jsonBuffer.createObject();
+    JsonObject root = jsonDoc.createNestedObject();
     root["sensor"] = "S00001";
     root["co2"] = airSensor.getCO2();
     root["temp"] = airSensor.getTemperature();
     root["humidity"] = airSensor.getHumidity();
 
-    root.printTo(Serial);
+    serializeJson(jsonDoc, Serial);
     Serial.println("\n");
   }
   
